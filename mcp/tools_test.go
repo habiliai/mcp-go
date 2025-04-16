@@ -240,3 +240,29 @@ func TestToolWithObjectAndArray(t *testing.T) {
 	assert.True(t, ok)
 	assert.Contains(t, required, "books")
 }
+
+func TestToolWithEmptySchema(t *testing.T) {
+	// Create a tool with an empty schema
+	tool := NewTool("empty-schema-tool",
+		WithDescription("A tool with an empty schema"),
+	)
+
+	// Marshal to JSON
+	data, err := json.Marshal(tool)
+	assert.NoError(t, err)
+
+	// Unmarshal to verify the structure
+	var result map[string]interface{}
+	err = json.Unmarshal(data, &result)
+	assert.NoError(t, err)
+
+	// Verify tool properties
+	assert.Equal(t, "empty-schema-tool", result["name"])
+	assert.Equal(t, "A tool with an empty schema", result["description"])
+
+	// Verify schema was properly included
+	schema, ok := result["inputSchema"].(map[string]interface{})
+	assert.True(t, ok)
+	assert.Equal(t, "object", schema["type"])
+	assert.Empty(t, schema["properties"])
+}
